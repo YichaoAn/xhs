@@ -1,0 +1,202 @@
+/* ===========================================
+   XHS IMAGE CARDS — 3:4 CARD BASE STYLES
+   小红书图文卡片基础样式（NON-NEGOTIABLE）
+   每张 HTML 文件必须完整引用本文件内容。
+   =========================================== */
+
+/* === 1. GLOBAL RESET & SCROLL === */
+html, body {
+    height: 100%;
+    overflow-x: hidden;
+    /* Vertical scroll to browse cards */
+    overflow-y: auto;
+}
+
+html {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* === 2. CARD CONTAINER — STRICT 3:4 RATIO === */
+/*
+   CRITICAL: Every .card MUST use these rules.
+   3:4 = width : height
+   If viewport width = 390px → height = 520px
+   If viewport width = 1080px → height = 1440px (export target)
+
+   Strategy A (recommended for export): Fixed 1080×1440 centered
+   Strategy B (responsive): 100vw × calc(100vw * 4/3)
+
+   Default: Strategy B (responsive, scroll-snapping).
+   Use Strategy A when generating export-ready single-card HTML.
+
+   ⚠️ container-type: inline-size is REQUIRED.
+   All font-size / spacing must use cqw (container query width),
+   NOT vw. On desktop the card is max 420px wide but the viewport
+   may be 1440px — using vw would make text overflow the card.
+*/
+.card {
+    width: 100vw;
+    height: calc(100vw * 4 / 3);
+    /* Minimum height guard for wide screens */
+    min-height: 480px;
+    /* Hard overflow prevention — content exceeds? Split to new card */
+    overflow: hidden;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    /* Prevents subpixel rendering artifacts */
+    backface-visibility: hidden;
+    /* REQUIRED: enables cqw units for all child typography */
+    container-type: inline-size;
+    container-name: card;
+}
+
+/* === 3. CARD CONTENT WRAPPER === */
+.card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-height: 100%;
+    overflow: hidden;
+    padding: var(--card-padding);
+}
+
+/* === 4. RESPONSIVE TYPOGRAPHY — clamp() with cqw everywhere ===
+
+   ⚠️ USE cqw NOT vw FOR ALL FONT SIZES AND SPACING.
+   cqw = container query width = the .card's own width.
+   vw  = viewport width = the browser window (can be 1440px on desktop).
+
+   On desktop, .card is capped at min(420px, 90vw). If you use vw,
+   a 7.2vw font at 1440px viewport = 104px → OVERFLOWS the card.
+   With cqw, 7.2cqw at 420px card = 30px → correct.
+
+   Reference sizes at 390px card width (standard phone):
+   --title: ~28px  --h2: ~20px  --body: ~14px  --small: ~11px
+
+   Reference sizes at 420px card width (desktop preview):
+   --title: ~30px  --h2: ~21px  --body: ~15px  --small: ~12px
+*/
+:root {
+    /* Typography — all preferred values use cqw */
+    --title-size:   clamp(1.6rem, 7.2cqw, 4.5rem);
+    --h2-size:      clamp(1.1rem, 5cqw,   3rem);
+    --h3-size:      clamp(0.9rem, 3.8cqw, 2.2rem);
+    --body-size:    clamp(0.75rem, 3.2cqw, 1.8rem);
+    --small-size:   clamp(0.6rem,  2.6cqw, 1.4rem);
+    --label-size:   clamp(0.5rem,  2cqw,   1.1rem);
+
+    /* Spacing — all preferred values use cqw */
+    --card-padding:     clamp(1rem, 5.5cqw, 2.2rem);
+    --content-gap:      clamp(0.5rem, 3cqw, 1.2rem);
+    --element-gap:      clamp(0.3rem, 1.6cqw, 0.8rem);
+    --section-gap:      clamp(0.8rem, 4cqw,   2rem);
+
+    /* Animation */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --duration-normal: 0.6s;
+}
+
+/* === 5. LISTS — constrained to card === */
+.item-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--element-gap);
+    overflow: hidden;
+}
+
+.item-list li {
+    font-size: var(--body-size);
+    line-height: 1.5;
+    list-style: none;
+}
+
+/* === 6. IMAGES — never overflow card === */
+img, .img-container {
+    max-width: 100%;
+    max-height: min(35vw, 30%); /* Conservative: images are secondary to text */
+    object-fit: contain;
+}
+
+/* === 7. CARD TYPE DENSITY LIMITS ===
+   Enforce in generation, not CSS.
+   Cover:   title + subtitle + tag
+   Content: 1 heading + 2-4 bullets OR 2 short paragraphs
+   List:    heading + max 5 items
+   Quote:   1 quote (max 3 lines) + attribution
+   Closing: CTA + hashtags + account info
+*/
+
+/* === 8. BREAKPOINTS — wide screen adaptation ===
+   Cards are designed for mobile-first.
+   On wide screens (desktop preview), center the card column.
+*/
+@media (min-width: 600px) {
+    html, body {
+        background: #111;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card {
+        width: min(420px, 90vw);
+        height: calc(min(420px, 90vw) * 4 / 3);
+        /* Center card on desktop */
+        margin: 0 auto;
+    }
+
+    /* Re-snap on desktop */
+    html {
+        scroll-snap-type: y mandatory;
+    }
+}
+
+/* === 9. VERY NARROW SCREENS (< 320px) === */
+@media (max-width: 319px) {
+    :root {
+        --card-padding: 1rem;
+        --title-size: 1.4rem;
+        --body-size: 0.7rem;
+    }
+}
+
+/* === 10. REDUCED MOTION === */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+/* === 11. PRINT / EXPORT HELPER ===
+   When user prints or exports individual cards,
+   each card fills one page at correct aspect ratio.
+*/
+@media print {
+    html, body {
+        width: 1080px;
+        background: white;
+    }
+    .card {
+        width: 1080px;
+        height: 1440px;
+        page-break-after: always;
+    }
+    .nav-dots, .progress-bar, .card-counter,
+    .edit-hotzone, .edit-toggle {
+        display: none !important;
+    }
+}
