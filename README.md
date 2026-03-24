@@ -16,6 +16,25 @@
 3. 看 3 个风格预览，选一个你喜欢的（或混合）
 4. 生成完整卡片组，在浏览器打开 → 截图 → 发布小红书
 
+## 12 种视觉风格
+
+来自 [frontend-slides](https://github.com/zarazhangrui/frontend-slides)，针对小红书竖版卡片完整适配。
+
+| 风格 | 气质 | 适合内容 |
+|------|------|---------|
+| Bold Signal | 撞色有冲击力 | 干货/方法论 |
+| Electric Studio | 高对比专业感 | 商业/职场/品牌 |
+| Creative Voltage | 复古现代有冲劲 | 创意/年轻/活力 |
+| Dark Botanical | 优雅沉稳有感染力 | 情绪/日记/生活 |
+| Neon Cyber | 未来感科技感 | 数码/测评/工具 |
+| Terminal Green | 极客开发者美学 | 技术科普/代码 |
+| Notebook Tabs | 整洁编辑感 | 知识科普/笔记 |
+| Pastel Geometry | 友好柔色几何 | 生活/学习/软干货 |
+| Vintage Editorial | 文艺复古杂志感 | 美食/旅行/观点 |
+| Split Pastel | 马卡龙双拼活泼 | 美妆/穿搭 |
+| Swiss Modern | 极简精准高级感 | 职场/效率 |
+| Paper & Ink | 文学编辑沉思感 | 读书笔记/深度观点 |
+
 ## 设计规范
 
 - 所有字体用 `cqw`（容器查询宽度），桌面/手机显示一致，不溢出
