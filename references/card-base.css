@@ -173,7 +173,23 @@ img, .img-container {
     }
 }
 
-/* === 9. VERY NARROW SCREENS (< 320px) === */
+/* === 9. SNAP SPACER — last card snaps to top ===
+   Without this, the last card can't scroll far enough to reach the top.
+   Place <div class="snap-spacer"></div> immediately after the last .card.
+   Height = viewport height - card height.
+*/
+.snap-spacer {
+    height: calc(100vh - 100vw * 4 / 3);
+    min-height: 0;
+    flex-shrink: 0;
+}
+@media (min-width: 600px) {
+    .snap-spacer {
+        height: calc(100vh - min(420px, 90vw) * 4 / 3);
+    }
+}
+
+/* === 10. VERY NARROW SCREENS (< 320px) === */
 @media (max-width: 319px) {
     :root {
         --card-padding: 1rem;
