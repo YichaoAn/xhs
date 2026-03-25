@@ -207,7 +207,7 @@ const presentation = new CardPresentation();
 参照 frontend-slides 中的 InlineEditor 实现：
 - JS hover + 400ms 延迟显示编辑按钮（不用 CSS `~` sibling）
 - `E` 键切换编辑模式
-- `Ctrl+S` 导出修改后 HTML
+- `⌘S`（macOS）/ `Ctrl+S`（Windows）导出修改后 HTML
 - localStorage 自动保存
 
 ---
@@ -222,13 +222,15 @@ const presentation = new CardPresentation();
 
 ---
 
-## 导出为图片（告知用户）
+## 导出为图片
 
-生成 HTML 后告知用户以下导出方式：
+生成 HTML 后，**不要主动截图**，统一引导用户进入 SKILL.md 的 **Phase 5** 自动导出流程：
 
-1. **浏览器截图**：Chrome DevTools → Cmd+Shift+P → "Capture node screenshot"，选中每张 `.card`
-2. **全页截图插件**：GoFullPage（Chrome）/ FireShot
-3. **命令行**：`node -e "..."` 配合 Puppeteer（高级用户）
-4. **直接使用 HTML**：部分平台支持 HTML 文件，或用于本地存档
+> 告诉用户：「改完后告诉我「导出图片」，我会自动帮你批量截图保存为 PNG。」
 
-推荐截图尺寸：**1080×1440px**（主流小红书封面尺寸）
+Phase 5 会自动：
+- 用本机 Chrome + Puppeteer 批量截图
+- 输出 2160×2880px PNG（@2x，对应 1080×1440 逻辑尺寸）
+- 截图完毕后自动打开图片文件夹
+
+> ⚠️ 手动截图方式（DevTools / GoFullPage）仅作为 Puppeteer 不可用时的降级方案，**不作为默认推荐**。

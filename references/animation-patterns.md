@@ -75,12 +75,26 @@
 .blob {
     position: absolute;
     border-radius: 50%;
-    filter: blur(80px);
+    filter: blur(clamp(8px, 4cqw, 20px));   /* ⚠️ blur 也用 cqw，不用 px 固定值 */
     pointer-events: none;
     z-index: 0;
 }
-/* 使用：<div class="blob" style="width:60vw;height:60vw;top:-10vw;right:-10vw;
-   background:radial-gradient(circle, rgba(212,165,116,0.2) 0%, transparent 70%)"></div> */
+/*
+   ⚠️ 必须用 cqw，不能用 vw！
+   vw = 视口宽度（桌面可达 1440px），cqw = .card 容器宽度（最大 420px）
+   用 vw 会导致 blob 在桌面端溢出卡片数倍。
+
+   正确用法：
+   <div class="blob" style="
+     width: 60cqw; height: 60cqw;
+     top: calc(-1 * 10cqw); right: calc(-1 * 10cqw);
+     background: radial-gradient(circle, rgba(212,165,116,0.2) 0%, transparent 70%);
+   "></div>
+
+   ❌ 错误（禁止）：width:60vw; top:-10vw
+   ✅ 正确：width:60cqw; top:calc(-1 * 10cqw)
+   注意负值必须用 calc(-1 * Xcqw)，不能写 -10cqw（CSS 不支持负 cqw 字面量）
+*/
 
 /* === 网格背景（Swiss Modern 风格）=== */
 .grid-bg {
