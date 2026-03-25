@@ -5,14 +5,22 @@
    =========================================== */
 
 /* === 1. GLOBAL RESET & SCROLL === */
-html, body {
+/*
+   ⚠️ SCROLL-SNAP RULES — DO NOT BREAK:
+   1. scroll-snap-type MUST be on the SAME element that scrolls (has overflow-y).
+   2. That element must be `body`, NOT `html`.
+      - On some browsers `html` scroll-snap is unreliable.
+      - More critically: if you later set body{display:flex}, snap breaks again.
+   3. NEVER set body{display:flex} for centering — use .card{margin:0 auto} instead.
+*/
+html {
     height: 100%;
-    overflow-x: hidden;
-    /* Vertical scroll to browse cards */
-    overflow-y: auto;
 }
 
-html {
+body {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;               /* scroll-snap container */
     scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
 }
@@ -142,21 +150,16 @@ img, .img-container {
 */
 @media (min-width: 600px) {
     /*
-      ⚠️ CRITICAL: Only apply flex centering to body, NOT html.
-      html is the scroll-snap container — adding display:flex to it
-      breaks scroll-snap entirely. body handles visual centering.
+      ⚠️ NEVER set body{display:flex} here — body is the scroll-snap container.
+      Centering is handled by .card{margin:0 auto} only.
     */
     body {
         background: #111;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
     }
 
     .card {
         width: min(420px, 90vw);
         height: calc(min(420px, 90vw) * 4 / 3);
-        /* Center card on desktop */
         margin: 0 auto;
     }
 }
