@@ -48,6 +48,11 @@ body {
    All font-size / spacing must use cqw (container query width),
    NOT vw. On desktop the card is max 420px wide but the viewport
    may be 1440px — using vw would make text overflow the card.
+
+   SPACING BETWEEN CARDS:
+   Add margin-bottom to .card for visual breathing room between cards.
+   Use scroll-margin-top:0 to keep snap point at card top, not gap top.
+   margin-bottom does NOT affect the snap anchor — cards still snap cleanly.
 */
 .card {
     width: 100vw;
@@ -57,6 +62,9 @@ body {
     /* Hard overflow prevention — content exceeds? Split to new card */
     overflow: hidden;
     scroll-snap-align: start;
+    scroll-margin-top: 0;
+    /* Visual breathing room between cards */
+    margin-bottom: clamp(12px, 3vw, 24px);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -160,7 +168,8 @@ img, .img-container {
     .card {
         width: min(420px, 90vw);
         height: calc(min(420px, 90vw) * 4 / 3);
-        margin: 0 auto;
+        /* Center horizontally; preserve bottom gap for breathing room */
+        margin: 0 auto clamp(16px, 2vh, 32px);
     }
 }
 
