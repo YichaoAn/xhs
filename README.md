@@ -37,6 +37,19 @@
 | Swiss Modern | 极简精准高级感 | 职场/效率 |
 | Paper & Ink | 文学编辑沉思感 | 读书笔记/深度观点 |
 
+## 滚动交互规范（已内置，生成时自动遵守）
+
+- **scroll-snap 容器** 放在 `body`，不放 `html`（跨浏览器更可靠）
+- **卡片间有呼吸间距**（`margin-bottom: clamp(12px,3vw,24px)`），最后一张附 `snap-spacer` 确保能 snap 到顶
+- **进度条 / navDots** 用 `scroll` 事件实时追踪，不依赖 IntersectionObserver（避免 threshold 偏差）
+- **不生成 wheelNav / touchNav**，滚轮和触控完全由 CSS scroll-snap 原生处理，不会双重跳卡
+
+## 内联编辑规范
+
+- **不在 HTML 里手写 `contenteditable`**，由 `_markEditables()` 在运行时自动扫描叶子文字节点并标记
+- `E` 键切换编辑模式，`⌘S` 导出修改后 HTML
+- 编辑时退出自动保存草稿到 localStorage
+
 ## 设计规范
 
 - 所有字体用 `cqw`（容器查询宽度），桌面/手机显示一致，不溢出
