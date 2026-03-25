@@ -84,16 +84,31 @@ class CardPresentation {
     }
 
     setupIntersectionObserver() {
-        const observer = new IntersectionObserver((entries) => {
+        // ⚠️ IntersectionObserver 只负责触发入场动效（.visible），
+        // 不用来追踪 this.current — 因为 threshold 触发时机不准，
+        // 加了 margin-bottom 间距后尤其不可靠。
+        // this.current 由下方 scroll 事件维护。
+        const visObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    this.current = this.cards.indexOf(entry.target);
-                    this.updateUI();
-                }
+                if (entry.isIntersecting) entry.target.classList.add('visible');
             });
-        }, { threshold: 0.4 });
-        this.cards.forEach(card => observer.observe(card));
+        }, { threshold: 0.3 });
+        this.cards.forEach(card => visObserver.observe(card));
+
+        // scroll 事件实时追踪：找离视口顶部最近的卡片
+        const onScroll = () => {
+            let closest = 0, minDist = Infinity;
+            this.cards.forEach((card, i) => {
+                const dist = Math.abs(card.getBoundingClientRect().top);
+                if (dist < minDist) { minDist = dist; closest = i; }
+            });
+            if (closest !== this.current) {
+                this.current = closest;
+                this.updateUI();
+            }
+        };
+        document.body.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('scroll', onScroll, { passive: true });
     }
 
     scrollTo(index) {
