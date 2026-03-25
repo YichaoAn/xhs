@@ -74,8 +74,9 @@ class CardPresentation {
         this.current = 0;
         this.setupIntersectionObserver(); // 动效触发
         this.setupKeyboardNav();          // 方向键导航
-        this.setupTouchNav();             // 触控滑动
-        this.setupWheelNav();             // 滚轮导航
+        // ⚠️ 不要加 setupTouchNav / setupWheelNav！
+        // CSS scroll-snap 已原生处理滚轮和触控滑动。
+        // JS 再拦截会触发两次跳卡（snap 一次 + scrollTo 一次）。
         this.setupProgressBar();
         this.setupNavDots();
         this.setupCardCounter();
@@ -110,26 +111,6 @@ class CardPresentation {
                 e.preventDefault(); this.scrollTo(this.current - 1);
             }
         });
-    }
-
-    setupTouchNav() {
-        let startY = 0;
-        document.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, {passive:true});
-        document.addEventListener('touchend', e => {
-            if (e.target.getAttribute('contenteditable')) return;
-            const delta = startY - e.changedTouches[0].clientY;
-            if (Math.abs(delta) > 50) this.scrollTo(this.current + (delta > 0 ? 1 : -1));
-        }, {passive:true});
-    }
-
-    setupWheelNav() {
-        let last = 0;
-        document.addEventListener('wheel', e => {
-            const now = Date.now();
-            if (now - last < 800) return;
-            last = now;
-            this.scrollTo(this.current + (e.deltaY > 30 ? 1 : e.deltaY < -30 ? -1 : 0));
-        }, {passive:true});
     }
 
     updateUI() {
