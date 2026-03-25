@@ -141,7 +141,12 @@ img, .img-container {
    On wide screens (desktop preview), center the card column.
 */
 @media (min-width: 600px) {
-    html, body {
+    /*
+      ⚠️ CRITICAL: Only apply flex centering to body, NOT html.
+      html is the scroll-snap container — adding display:flex to it
+      breaks scroll-snap entirely. body handles visual centering.
+    */
+    body {
         background: #111;
         display: flex;
         flex-direction: column;
@@ -153,11 +158,6 @@ img, .img-container {
         height: calc(min(420px, 90vw) * 4 / 3);
         /* Center card on desktop */
         margin: 0 auto;
-    }
-
-    /* Re-snap on desktop */
-    html {
-        scroll-snap-type: y mandatory;
     }
 }
 

@@ -204,11 +204,69 @@ const presentation = new CardPresentation();
 
 ### 3. 内联编辑（仅用户选择"是"时生成）
 
-参照 frontend-slides 中的 InlineEditor 实现：
-- JS hover + 400ms 延迟显示编辑按钮（不用 CSS `~` sibling）
-- `E` 键切换编辑模式
-- `⌘S`（macOS）/ `Ctrl+S`（Windows）导出修改后 HTML
-- localStorage 自动保存
+**⚠️ 核心注意事项：不要在 HTML 里手动给每个元素加 `contenteditable`，而是用 JS `_markEditables()` 方法自动扫描并标记。**
+
+```javascript
+class InlineEditor {
+  constructor() {
+    this.active = false;
+    this.btn = document.getElementById('editToggle');
+    this.hint = document.getElementById('editHint');
+    this._markEditables(); // ← 必须在绑定事件前调用
+    this.btn.addEventListener('click', () => this.toggle());
+    document.addEventListener('keydown', (e) => {
+      if ((e.key === 'e' || e.key === 'E') && e.target.getAttribute('contenteditable') !== 'true') {
+        this.toggle(); return;
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); this.save(); }
+    });
+  }
+
+  _markEditables() {
+    // 排除装饰性元素的类名列表（按项目调整）
+    const SKIP_TAGS = new Set(['SCRIPT','STYLE','NAV','BUTTON']);
+    const SKIP_CLASSES = ['nav-dot','progress-bar','card-counter',
+      'view-dot','layer-dot','layer-line','white-panel','white-panel-top',
+      'divider-line','noise','grid-lines','ev-icon','action-num','ct-num',
+      'big-q','step-badge'];
+    const isSkip = el =>
+      SKIP_TAGS.has(el.tagName) || SKIP_CLASSES.some(c => el.classList.contains(c));
+
+    document.querySelectorAll('.card *').forEach(el => {
+      if (isSkip(el)) return;
+      // 叶子判断：直接含文本节点 + 子元素全是内联标签
+      const hasText = Array.from(el.childNodes).some(n =>
+        n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+      const inlineOnly = Array.from(el.children).every(c =>
+        ['BR','SPAN','STRONG','EM'].includes(c.tagName));
+      if (hasText && inlineOnly) {
+        el.setAttribute('contenteditable', 'false');
+        el.dataset.editable = '1'; // 用 data-editable 而非 [contenteditable] 作为选择器
+      }
+    });
+  }
+
+  toggle() {
+    this.active = !this.active;
+    document.querySelectorAll('[data-editable]').forEach(el =>
+      el.setAttribute('contenteditable', this.active ? 'true' : 'false'));
+    this.btn.textContent = this.active ? '✓ 完成编辑' : '✏ 编辑';
+    this.btn.classList.toggle('active-edit', this.active);
+    this.hint.classList.toggle('visible', this.active);
+    if (!this.active) this._saveToStorage();
+  }
+
+  save() { /* 导出 HTML 文件，⌘S 触发 */ }
+  _saveToStorage() { /* localStorage 草稿 */ }
+}
+const editor = new InlineEditor();
+```
+
+**关键规则：**
+- `_markEditables()` 自动扫描 `.card` 内所有叶子文字容器，**不需要在 HTML 里手写 `contenteditable`**
+- 用 `data-editable` 作为选择器，而非 `[contenteditable]`（后者在 toggle 时会误选 navDots 的 button）
+- `E` 键和 `⌘S` 都在 InlineEditor 里统一注册，**CardPresentation 里不要重复绑定 E 键**
+- `⌘S` 任何时候都可以导出（不限于编辑模式中）
 
 ---
 
